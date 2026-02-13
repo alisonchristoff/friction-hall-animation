@@ -15,7 +15,7 @@ const CONFIG = {
     width: 320,
     height: 180,
     fps: 30,
-    duration: 8,  // seconds
+    duration: 5.5,  // seconds
 };
 
 // Initialize
@@ -110,39 +110,41 @@ function drawFrame(time) {
     const visibility = timeline.getValue('visibility', 0);
     const shakeIntensity = timeline.getValue('shake', 0);
     const scanlineOpacity = timeline.getValue('scanlines', 0);
-    const currentPhase = timeline.getCurrentPhase();
+    const offsetX = timeline.getValue('offsetX', 0);
+    const offsetY = timeline.getValue('offsetY', 0);
+    const scale = timeline.getValue('scale', 1);
+    const rotation = timeline.getValue('rotation', 0);
 
     // Update shake
     shakeEffect.setIntensity(shakeIntensity);
     const shakeOffset = shakeEffect.update();
 
-    // Apply shake by offsetting draw position
+    // Canvas center point for transforms
+    const cx = CONFIG.width / 2;
+    const cy = CONFIG.height / 2;
+
     renderer.ctx.save();
-    renderer.ctx.translate(shakeOffset.x, shakeOffset.y);
 
-    // Phase-specific rendering
-    if (currentPhase === 'glitchIntro') {
-        // Glitch intro: random artifacts and brief flashes
-        glitchEffect.drawArtifacts(renderer, glitchIntensity);
+    // Transform chain: translate to center + offset, rotate, scale, translate back
+    renderer.ctx.translate(
+        cx + Math.floor(offsetX) + shakeOffset.x,
+        cy + Math.floor(offsetY) + shakeOffset.y
+    );
+    renderer.ctx.rotate(rotation);
+    renderer.ctx.scale(scale, scale);
+    renderer.ctx.translate(-cx, -cy);
 
-        // Occasional flash of content
-        if (Math.random() < 0.15 * glitchIntensity) {
-            drawContent(time, 0.7);
-            glitchEffect.apply(renderer, 0.9);
-        }
-    } else {
-        // Draw main content
-        if (visibility > 0) {
-            drawContent(time, visibility);
+    // Draw content with full transform applied
+    if (visibility > 0) {
+        drawContent(time, visibility);
 
-            // Apply glitch effect
-            if (glitchIntensity > 0.05) {
-                glitchEffect.apply(renderer, glitchIntensity);
-            }
+        // Subtle glitch effect
+        if (glitchIntensity > 0.03) {
+            glitchEffect.apply(renderer, glitchIntensity);
         }
     }
 
-    // Apply scanlines
+    // Subtle scanlines
     if (scanlineOpacity > 0 && visibility > 0) {
         scanlinesEffect.apply(renderer, scanlineOpacity, time);
     }

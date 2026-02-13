@@ -1,23 +1,25 @@
-// Speech bubble generator - jagged, wonky, spikey shape
+// Speech bubble generator - soft, organic shape with gentle character
 
 export class SpeechBubble {
     constructor() {
-        this.fillColor = '#D8BFD8';  // Pale lavender
-        this.outlineColor = '#000000';
-        this.outlineThickness = 4;
+        this.fillColor1 = '#E8D4E8';  // Warm lavender (top)
+        this.fillColor2 = '#D8BCD0';  // Deeper rose-lavender (bottom)
+        this.outlineColor = '#1A1520';  // Dark warm brown
+        this.outlineThickness = 3;
 
         // Cached shape
         this.shape = null;
         this.cachedPixels = null;  // Cache rasterized result
         this.cachedOutline = null;
+        this.boundsMinY = 0;
+        this.boundsMaxY = 0;
     }
 
     // Generate irregular spikes around the perimeter
     generateShape(centerX, centerY, baseWidth, baseHeight, seed = 42) {
         const points = [];
-        const numPoints = 32;  // Points around the perimeter
-        const spikeVariance = 8;  // How much spikes can vary
-        const spikeFrequency = 0.3;  // How often big spikes occur
+        const numPoints = 48;  // More points for smoother perimeter
+        const spikeFrequency = 0.15;  // Fewer spikes for softer feel
 
         // Simple seeded random
         let random = seed;
@@ -33,15 +35,15 @@ export class SpeechBubble {
             let radiusX = baseWidth / 2;
             let radiusY = baseHeight / 2;
 
-            // Add randomness for wonky shape
-            const wobble = 1 + (nextRandom() - 0.5) * 0.2;
+            // Gentle organic wobble
+            const wobble = 1 + (nextRandom() - 0.5) * 0.1;
 
-            // Add spikes
+            // Subtle bumps instead of aggressive spikes
             let spike = 1;
             if (nextRandom() < spikeFrequency) {
-                spike = 1 + nextRandom() * 0.3;  // Outward spike
+                spike = 1 + nextRandom() * 0.12;  // Gentle outward bump
             } else if (nextRandom() < spikeFrequency) {
-                spike = 1 - nextRandom() * 0.15;  // Inward dent
+                spike = 1 - nextRandom() * 0.06;  // Slight inward curve
             }
 
             const x = centerX + Math.cos(angle) * radiusX * wobble * spike;
@@ -96,6 +98,8 @@ export class SpeechBubble {
 
         this.cachedPixels = [];
         this.cachedOutline = [];
+        this.boundsMinY = Infinity;
+        this.boundsMaxY = -Infinity;
         const thickness = this.outlineThickness;
 
         // First pass: find all filled pixels and edge pixels
@@ -116,6 +120,8 @@ export class SpeechBubble {
                         this.cachedOutline.push({ x, y });
                     } else {
                         this.cachedPixels.push({ x, y });
+                        if (y < this.boundsMinY) this.boundsMinY = y;
+                        if (y > this.boundsMaxY) this.boundsMaxY = y;
                     }
                 } else {
                     // Check if near shape (for outer outline)
@@ -150,9 +156,18 @@ export class SpeechBubble {
             renderer.setPixel(p.x, p.y, this.outlineColor);
         }
 
-        // Draw cached fill
-        for (const p of this.cachedPixels) {
-            renderer.setPixel(p.x, p.y, this.fillColor);
+        // Draw cached fill with dithered gradient
+        const range = this.boundsMaxY - this.boundsMinY;
+        if (range > 0) {
+            for (const p of this.cachedPixels) {
+                const t = (p.y - this.boundsMinY) / range;
+                const color = renderer.ditherPixel(p.x, p.y, this.fillColor1, this.fillColor2, t);
+                renderer.setPixel(p.x, p.y, color);
+            }
+        } else {
+            for (const p of this.cachedPixels) {
+                renderer.setPixel(p.x, p.y, this.fillColor1);
+            }
         }
     }
 

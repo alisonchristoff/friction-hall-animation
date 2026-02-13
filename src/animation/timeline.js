@@ -37,10 +37,9 @@ export class Timeline {
 
         // Animation phases (in seconds)
         this.phases = {
-            glitchIntro: { start: 0, end: 2 },
-            reveal: { start: 2, end: 4 },
-            hold: { start: 4, end: 6 },
-            outro: { start: 6, end: 8 }
+            entry: { start: 0, end: 1.8 },
+            hold: { start: 1.8, end: 3.2 },
+            exit: { start: 3.2, end: 5.5 }
         };
 
         // Keyframes for various properties
@@ -159,65 +158,104 @@ export class Timeline {
     }
 }
 
-// Pre-configured timeline for Friction Hall intro
+// Pre-configured timeline for Friction Hall intro (5.5 seconds)
+// Entry: Swoop in from background (tiny → full, swervy arc from upper-left)
+// Hold: Confident display with subtle effects
+// Exit: Shake then roll out to the right
 export function createFrictionHallTimeline() {
-    const timeline = new Timeline(30, 8);
+    const timeline = new Timeline(30, 5.5);
 
-    // Glitch intensity
-    // Phase 1: Glitch intro (0-2s) - high glitch
-    timeline.addKeyframeAt('glitchIntensity', 0, 0);
-    timeline.addKeyframeAt('glitchIntensity', 0.2, 0.8, Easing.easeOut);
-    timeline.addKeyframeAt('glitchIntensity', 1.5, 0.6);
-    timeline.addKeyframeAt('glitchIntensity', 2, 0.9, Easing.easeIn);
+    // ===== ENTRY: Swoop in from background (0-1.8s) =====
 
-    // Phase 2: Reveal (2-4s) - glitch clears
-    timeline.addKeyframeAt('glitchIntensity', 2.1, 0.7);
-    timeline.addKeyframeAt('glitchIntensity', 3, 0.2, Easing.easeOut);
-    timeline.addKeyframeAt('glitchIntensity', 4, 0.05);
+    // Scale: starts tiny (far away), grows to full with slight overshoot
+    timeline.addKeyframeAt('scale', 0, 0.05);
+    timeline.addKeyframeAt('scale', 0.8, 0.5, Easing.easeOutCubic);
+    timeline.addKeyframeAt('scale', 1.5, 1.03, Easing.easeOutCubic);
+    timeline.addKeyframeAt('scale', 1.8, 1.0, Easing.easeOutCubic);
 
-    // Phase 3: Hold (4-6s) - subtle micro-glitches
-    timeline.addKeyframeAt('glitchIntensity', 4, 0.05);
-    timeline.addKeyframeAt('glitchIntensity', 6, 0.05);
+    // Horizontal: swervy path from upper-left
+    timeline.addKeyframeAt('offsetX', 0, -180);
+    timeline.addKeyframeAt('offsetX', 0.6, -60, Easing.easeOutCubic);
+    timeline.addKeyframeAt('offsetX', 1.2, 15, Easing.easeInOut);       // overshoot right
+    timeline.addKeyframeAt('offsetX', 1.8, 0, Easing.easeOutCubic);     // settle center
 
-    // Phase 4: Outro (6-8s) - glitch burst then fade
-    timeline.addKeyframeAt('glitchIntensity', 6, 0.05);
-    timeline.addKeyframeAt('glitchIntensity', 6.3, 0.6, Easing.easeIn);
-    timeline.addKeyframeAt('glitchIntensity', 7, 0.3);
-    timeline.addKeyframeAt('glitchIntensity', 8, 0);
+    // Vertical: arc from above
+    timeline.addKeyframeAt('offsetY', 0, -120);
+    timeline.addKeyframeAt('offsetY', 0.6, -30, Easing.easeOutCubic);
+    timeline.addKeyframeAt('offsetY', 1.2, 8, Easing.easeInOut);        // overshoot below
+    timeline.addKeyframeAt('offsetY', 1.8, 0, Easing.easeOutCubic);     // settle center
 
-    // Visibility (0 = hidden, 1 = visible)
-    timeline.addKeyframeAt('visibility', 0, 0);
-    timeline.addKeyframeAt('visibility', 2, 0);
-    timeline.addKeyframeAt('visibility', 2.1, 1, Easing.easeOut);
-    timeline.addKeyframeAt('visibility', 7.5, 1);
-    timeline.addKeyframeAt('visibility', 8, 0, Easing.easeIn);
+    // Rotation: flat during entry
+    timeline.addKeyframeAt('rotation', 0, -0.15);                       // slight tilt during flight
+    timeline.addKeyframeAt('rotation', 1.5, 0.02, Easing.easeOutCubic);
+    timeline.addKeyframeAt('rotation', 1.8, 0, Easing.easeOutCubic);
 
-    // Screen shake
+    // Visibility: always visible (position/scale handles screen presence)
+    timeline.addKeyframeAt('visibility', 0, 1);
+
+    // ===== HOLD: Confident display (1.8-3.2s) =====
+
+    timeline.addKeyframeAt('offsetX', 3.2, 0);
+    timeline.addKeyframeAt('offsetY', 3.2, 0);
+    timeline.addKeyframeAt('scale', 3.2, 1.0);
+    timeline.addKeyframeAt('rotation', 3.2, 0);
+
+    // ===== EXIT: Shake then roll out right (3.2-5.5s) =====
+
+    // Shake builds up before the roll
     timeline.addKeyframeAt('shake', 0, 0);
-    timeline.addKeyframeAt('shake', 2, 8);  // Big shake on reveal
-    timeline.addKeyframeAt('shake', 2.5, 2, Easing.easeOut);
-    timeline.addKeyframeAt('shake', 3, 0);
-    timeline.addKeyframeAt('shake', 6.3, 5);  // Outro shake
-    timeline.addKeyframeAt('shake', 7, 0, Easing.easeOut);
+    timeline.addKeyframeAt('shake', 1.4, 0);
+    timeline.addKeyframeAt('shake', 1.6, 1.5, Easing.easeOut);     // soft landing thump
+    timeline.addKeyframeAt('shake', 2.0, 0, Easing.easeOut);
+    timeline.addKeyframeAt('shake', 3.2, 0);
+    timeline.addKeyframeAt('shake', 3.4, 3, Easing.easeIn);        // wind-up shake
+    timeline.addKeyframeAt('shake', 3.6, 1);
+    timeline.addKeyframeAt('shake', 3.8, 0);
 
-    // Scanline opacity
+    // Roll out: rotation (2 full spins)
+    timeline.addKeyframeAt('rotation', 3.5, 0);
+    timeline.addKeyframeAt('rotation', 5.3, Math.PI * 4, Easing.easeInCubic);
+
+    // Fly off to the right
+    timeline.addKeyframeAt('offsetX', 3.5, 0);
+    timeline.addKeyframeAt('offsetX', 5.3, 500, Easing.easeInCubic);
+
+    // Slight upward arc during exit
+    timeline.addKeyframeAt('offsetY', 3.5, 0);
+    timeline.addKeyframeAt('offsetY', 4.2, -15, Easing.easeInOut);
+    timeline.addKeyframeAt('offsetY', 5.3, -40, Easing.easeInCubic);
+
+    // Slight shrink as it rolls away
+    timeline.addKeyframeAt('scale', 3.5, 1.0);
+    timeline.addKeyframeAt('scale', 5.3, 0.7, Easing.easeInCubic);
+
+    // Visibility fades at very end
+    timeline.addKeyframeAt('visibility', 5.0, 1);
+    timeline.addKeyframeAt('visibility', 5.5, 0, Easing.easeIn);
+
+    // ===== EFFECTS =====
+
+    // Subtle glitch: brief pulse on landing + pre-exit
+    timeline.addKeyframeAt('glitchIntensity', 0, 0);
+    timeline.addKeyframeAt('glitchIntensity', 1.5, 0);
+    timeline.addKeyframeAt('glitchIntensity', 1.7, 0.15, Easing.easeOut);
+    timeline.addKeyframeAt('glitchIntensity', 2.0, 0, Easing.easeOut);
+    timeline.addKeyframeAt('glitchIntensity', 3.2, 0);
+    timeline.addKeyframeAt('glitchIntensity', 3.4, 0.1, Easing.easeOut);
+    timeline.addKeyframeAt('glitchIntensity', 3.6, 0, Easing.easeOut);
+
+    // Subtle scanlines during hold
     timeline.addKeyframeAt('scanlines', 0, 0);
-    timeline.addKeyframeAt('scanlines', 2, 0.5);
-    timeline.addKeyframeAt('scanlines', 3, 0.2, Easing.easeOut);
-    timeline.addKeyframeAt('scanlines', 6, 0.15);
-    timeline.addKeyframeAt('scanlines', 8, 0);
+    timeline.addKeyframeAt('scanlines', 2.0, 0);
+    timeline.addKeyframeAt('scanlines', 2.3, 0.06, Easing.easeOut);
+    timeline.addKeyframeAt('scanlines', 3.0, 0.06);
+    timeline.addKeyframeAt('scanlines', 3.2, 0, Easing.easeIn);
 
-    // Color saturation (for oversaturated reveal)
-    timeline.addKeyframeAt('saturation', 0, 1);
-    timeline.addKeyframeAt('saturation', 2, 1.5);
-    timeline.addKeyframeAt('saturation', 3, 1, Easing.easeOut);
-    timeline.addKeyframeAt('saturation', 6, 1);
-
-    // Breathing/pulse effect
+    // Gentle breathing pulse during hold
     timeline.addKeyframeAt('pulse', 0, 1);
-    timeline.addKeyframeAt('pulse', 4, 1);
-    timeline.addKeyframeAt('pulse', 5, 1.02);
-    timeline.addKeyframeAt('pulse', 6, 1);
+    timeline.addKeyframeAt('pulse', 2.0, 1);
+    timeline.addKeyframeAt('pulse', 2.7, 1.01);
+    timeline.addKeyframeAt('pulse', 3.2, 1);
 
     return timeline;
 }

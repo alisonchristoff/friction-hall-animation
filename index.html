@@ -30,8 +30,8 @@
             image-rendering: pixelated;
             image-rendering: crisp-edges;
             background: transparent;
-            /* 3D perspective tilt */
-            transform: perspective(800px) rotateX(15deg) rotateY(-10deg);
+            /* Gentle perspective - grounded, not aggressive */
+            transform: perspective(1200px) rotateX(3deg) rotateY(-2deg);
             transform-origin: center center;
         }
 
@@ -42,19 +42,19 @@
         }
 
         button {
-            background: #FF6B35;
+            background: #D98070;
             border: none;
             color: #fff;
             padding: 10px 20px;
             font-family: monospace;
             font-size: 14px;
             cursor: pointer;
-            border: 3px solid #000;
+            border: 3px solid #1A1520;
         }
 
         button:hover {
-            background: #FFD93D;
-            color: #000;
+            background: #F0C878;
+            color: #1A1520;
         }
 
         .info {
@@ -97,7 +97,7 @@
     </div>
 
     <div class="info">
-        <p>Resolution: 320×180 (scaled 6× for display) | Frame: <span id="frameCounter">0</span>/<span id="totalFrames">240</span> | <span id="status">Ready</span></p>
+        <p>Resolution: 320×180 (scaled 6× for display) | Frame: <span id="frameCounter">0</span>/<span id="totalFrames">165</span> | <span id="status">Ready</span></p>
     </div>
 
     <script type="module" src="src/main.js"></script>

@@ -1,31 +1,36 @@
-// "FRICTION HALL" main text - custom pixel bubble letters
-// F and H are ~40% larger than other letters
-// Orange-to-yellow sunset gradient with ordered dithering
+// "FRICTION HALL" main text - tall confident bubble pixel letters
+// F and H are larger than other letters
+// Warm coral-to-gold gradient with ordered dithering
 
 // Each letter defined as a 2D pixel array
-// Standard letters are 7 pixels wide, 9 pixels tall
-// F and H are 10 pixels wide, 13 pixels tall (approximately 40% larger)
+// Standard letters: 12 pixels tall, 7-8 wide (tall proportions)
+// Large F and H: 16 pixels tall, 10 wide
 
 const LETTERS = {
-    // Large F (10x13)
+    // Large F (10x16) - tall, rounded, confident
     'F_LARGE': [
+        [0,1,1,1,1,1,1,1,1,0],
         [1,1,1,1,1,1,1,1,1,1],
-        [1,1,1,1,1,1,1,1,1,1],
+        [1,1,1,0,0,0,0,0,0,0],
+        [1,1,0,0,0,0,0,0,0,0],
         [1,1,0,0,0,0,0,0,0,0],
         [1,1,0,0,0,0,0,0,0,0],
         [1,1,0,0,0,0,0,0,0,0],
         [1,1,1,1,1,1,1,0,0,0],
-        [1,1,1,1,1,1,1,0,0,0],
+        [1,1,1,1,1,1,0,0,0,0],
         [1,1,0,0,0,0,0,0,0,0],
         [1,1,0,0,0,0,0,0,0,0],
         [1,1,0,0,0,0,0,0,0,0],
         [1,1,0,0,0,0,0,0,0,0],
         [1,1,0,0,0,0,0,0,0,0],
-        [1,1,0,0,0,0,0,0,0,0],
+        [0,1,1,0,0,0,0,0,0,0],
+        [0,0,1,0,0,0,0,0,0,0],
     ],
 
-    // Large H (10x13)
+    // Large H (10x16) - tall, rounded, balanced
     'H_LARGE': [
+        [0,1,0,0,0,0,0,0,1,0],
+        [1,1,0,0,0,0,0,0,1,1],
         [1,1,0,0,0,0,0,0,1,1],
         [1,1,0,0,0,0,0,0,1,1],
         [1,1,0,0,0,0,0,0,1,1],
@@ -39,101 +44,126 @@ const LETTERS = {
         [1,1,0,0,0,0,0,0,1,1],
         [1,1,0,0,0,0,0,0,1,1],
         [1,1,0,0,0,0,0,0,1,1],
+        [0,1,0,0,0,0,0,0,1,0],
     ],
 
-    // Standard R (7x9)
+    // R (7x12) - tall, round bowl
     'R': [
-        [1,1,1,1,1,1,0],
+        [0,1,1,1,1,1,0],
         [1,1,1,1,1,1,1],
         [1,1,0,0,0,1,1],
         [1,1,0,0,0,1,1],
-        [1,1,1,1,1,1,0],
+        [1,1,0,0,1,1,0],
+        [1,1,1,1,1,0,0],
         [1,1,1,1,0,0,0],
         [1,1,0,1,1,0,0],
         [1,1,0,0,1,1,0],
+        [1,1,0,0,1,1,0],
         [1,1,0,0,0,1,1],
+        [0,1,0,0,0,0,1],
     ],
 
-    // Standard I (3x9)
+    // I (4x12) - tall, balanced width
     'I': [
-        [1,1,1],
-        [1,1,1],
-        [0,1,0],
-        [0,1,0],
-        [0,1,0],
-        [0,1,0],
-        [0,1,0],
-        [1,1,1],
-        [1,1,1],
+        [0,1,1,0],
+        [1,1,1,1],
+        [0,1,1,0],
+        [0,1,1,0],
+        [0,1,1,0],
+        [0,1,1,0],
+        [0,1,1,0],
+        [0,1,1,0],
+        [0,1,1,0],
+        [0,1,1,0],
+        [1,1,1,1],
+        [0,1,1,0],
     ],
 
-    // Standard C (7x9)
+    // C (7x12) - tall, round
     'C': [
+        [0,0,1,1,1,0,0],
         [0,1,1,1,1,1,0],
-        [1,1,1,1,1,1,1],
+        [1,1,0,0,0,1,1],
         [1,1,0,0,0,0,0],
         [1,1,0,0,0,0,0],
         [1,1,0,0,0,0,0],
         [1,1,0,0,0,0,0],
         [1,1,0,0,0,0,0],
-        [1,1,1,1,1,1,1],
+        [1,1,0,0,0,0,0],
+        [1,1,0,0,0,1,1],
         [0,1,1,1,1,1,0],
+        [0,0,1,1,1,0,0],
     ],
 
-    // Standard T (7x9)
+    // T (8x12) - tall, centered 2px stem
     'T': [
-        [1,1,1,1,1,1,1],
-        [1,1,1,1,1,1,1],
-        [0,0,0,1,0,0,0],
-        [0,0,0,1,0,0,0],
-        [0,0,0,1,0,0,0],
-        [0,0,0,1,0,0,0],
-        [0,0,0,1,0,0,0],
-        [0,0,0,1,0,0,0],
-        [0,0,0,1,0,0,0],
+        [0,1,1,1,1,1,1,0],
+        [1,1,1,1,1,1,1,1],
+        [0,0,0,1,1,0,0,0],
+        [0,0,0,1,1,0,0,0],
+        [0,0,0,1,1,0,0,0],
+        [0,0,0,1,1,0,0,0],
+        [0,0,0,1,1,0,0,0],
+        [0,0,0,1,1,0,0,0],
+        [0,0,0,1,1,0,0,0],
+        [0,0,0,1,1,0,0,0],
+        [0,0,0,1,1,0,0,0],
+        [0,0,0,1,1,0,0,0],
     ],
 
-    // Standard O (7x9)
+    // O (7x12) - tall, round
     'O': [
+        [0,0,1,1,1,0,0],
         [0,1,1,1,1,1,0],
-        [1,1,1,1,1,1,1],
         [1,1,0,0,0,1,1],
         [1,1,0,0,0,1,1],
         [1,1,0,0,0,1,1],
         [1,1,0,0,0,1,1],
         [1,1,0,0,0,1,1],
-        [1,1,1,1,1,1,1],
+        [1,1,0,0,0,1,1],
+        [1,1,0,0,0,1,1],
+        [1,1,0,0,0,1,1],
         [0,1,1,1,1,1,0],
+        [0,0,1,1,1,0,0],
     ],
 
-    // Standard N (7x9)
+    // N (7x12) - tall, clean diagonal
     'N': [
+        [0,1,0,0,0,1,0],
         [1,1,0,0,0,1,1],
         [1,1,1,0,0,1,1],
+        [1,1,1,0,0,1,1],
         [1,1,1,1,0,1,1],
-        [1,1,1,1,0,1,1],
+        [1,1,0,1,0,1,1],
         [1,1,0,1,1,1,1],
-        [1,1,0,1,1,1,1],
+        [1,1,0,0,1,1,1],
         [1,1,0,0,1,1,1],
         [1,1,0,0,0,1,1],
         [1,1,0,0,0,1,1],
+        [0,1,0,0,0,1,0],
     ],
 
-    // Standard A (7x9)
+    // A (7x12) - tall, pointed top
     'A': [
         [0,0,1,1,1,0,0],
         [0,1,1,1,1,1,0],
         [1,1,0,0,0,1,1],
         [1,1,0,0,0,1,1],
+        [1,1,0,0,0,1,1],
         [1,1,1,1,1,1,1],
         [1,1,1,1,1,1,1],
         [1,1,0,0,0,1,1],
         [1,1,0,0,0,1,1],
         [1,1,0,0,0,1,1],
+        [1,1,0,0,0,1,1],
+        [0,1,0,0,0,1,0],
     ],
 
-    // Standard L (7x9)
+    // L (7x12) - tall, rounded
     'L': [
+        [0,1,0,0,0,0,0],
+        [1,1,0,0,0,0,0],
+        [1,1,0,0,0,0,0],
         [1,1,0,0,0,0,0],
         [1,1,0,0,0,0,0],
         [1,1,0,0,0,0,0],
@@ -142,11 +172,12 @@ const LETTERS = {
         [1,1,0,0,0,0,0],
         [1,1,0,0,0,0,0],
         [1,1,1,1,1,1,1],
-        [1,1,1,1,1,1,1],
+        [0,1,1,1,1,1,0],
     ],
 
-    // Standard H (7x9) - for when not using large version
+    // H (7x12) - standard size, tall
     'H': [
+        [0,1,0,0,0,1,0],
         [1,1,0,0,0,1,1],
         [1,1,0,0,0,1,1],
         [1,1,0,0,0,1,1],
@@ -156,30 +187,42 @@ const LETTERS = {
         [1,1,0,0,0,1,1],
         [1,1,0,0,0,1,1],
         [1,1,0,0,0,1,1],
+        [1,1,0,0,0,1,1],
+        [0,1,0,0,0,1,0],
     ],
 };
 
+// Height constants for layout
+const LARGE_HEIGHT = 16;
+const STANDARD_HEIGHT = 12;
+
 export class FrictionHallText {
     constructor() {
-        this.color1 = '#FF6B35';  // Orange
-        this.color2 = '#FFD93D';  // Yellow
-        this.outlineColor = '#000000';
+        this.color1 = '#D98070';  // Warm coral
+        this.color2 = '#F0C878';  // Soft gold
+        this.outlineColor = '#1A1520';  // Dark warm brown
         this.outlineThickness = 2;
 
         // Letter spacing
         this.letterSpacing = 2;
-        this.lineSpacing = 4;  // Space between FRICTION and HALL
+        this.lineSpacing = 5;  // Space between FRICTION and HALL
 
-        // Wobble for fun baseline
-        this.wobbleAmplitude = 1;
-        this.wobbleFrequency = 0.5;
+        // Wobble for fun baseline (gentle)
+        this.wobbleAmplitude = 0.5;
+        this.wobbleFrequency = 0.4;
     }
 
-    // Get letter data with size info
+    // Get letter data with size info (auto-detected from pixel array)
     getLetterData(char, isLarge = false) {
-        if (char === 'F' && isLarge) return { pixels: LETTERS['F_LARGE'], width: 10, height: 13 };
-        if (char === 'H' && isLarge) return { pixels: LETTERS['H_LARGE'], width: 10, height: 13 };
-        if (LETTERS[char]) return { pixels: LETTERS[char], width: LETTERS[char][0].length, height: LETTERS[char].length };
+        let key = char;
+        if ((char === 'F' || char === 'H') && isLarge) key = char + '_LARGE';
+        if (LETTERS[key]) {
+            return {
+                pixels: LETTERS[key],
+                width: LETTERS[key][0].length,
+                height: LETTERS[key].length
+            };
+        }
         return null;
     }
 
@@ -207,7 +250,7 @@ export class FrictionHallText {
 
         return {
             width: Math.max(frictionWidth, hallWidth),
-            height: 13 + this.lineSpacing + 13,  // Two lines of large letters
+            height: LARGE_HEIGHT + this.lineSpacing + LARGE_HEIGHT,
             frictionWidth,
             hallWidth
         };
@@ -243,25 +286,23 @@ export class FrictionHallText {
 
         const dims = this.getDimensions();
 
-        // Center each word horizontally (use floor for pixel-perfect positioning)
+        // Center each word horizontally
         const frictionX = Math.floor(centerX - dims.frictionWidth / 2);
         const hallX = Math.floor(centerX - dims.hallWidth / 2);
 
         // Stack vertically, centered around centerY
         const totalHeight = dims.height;
         const frictionY = Math.floor(centerY - totalHeight / 2);
-        const hallY = Math.floor(frictionY + 13 + this.lineSpacing);
+        const hallY = Math.floor(frictionY + LARGE_HEIGHT + this.lineSpacing);
 
         this.drawWord(renderer, friction, frictionX, frictionY, time, 0, true);
         this.drawWord(renderer, hall, hallX, hallY, time, friction.length, true);
     }
 
-    // Get the height (for positioning)
     getHeight() {
         return this.getDimensions().height;
     }
 
-    // Get the width (for positioning)
     getWidth() {
         return this.getDimensions().width;
     }
