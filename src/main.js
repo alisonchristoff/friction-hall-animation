@@ -121,11 +121,6 @@ function drawFrame(time) {
     const scale = timeline.getValue('scale', 1);
     const rotation = timeline.getValue('rotation', 0);
 
-    // Debug: log transform values every 30 frames
-    if (timeline.currentFrame % 30 === 0) {
-        console.log(`Frame ${timeline.currentFrame}: scale=${scale.toFixed(3)}, rotation=${rotation.toFixed(3)}, offsetX=${offsetX.toFixed(1)}, offsetY=${offsetY.toFixed(1)}, visibility=${visibility}`);
-    }
-
     if (visibility <= 0) return;
 
     // Update shake
@@ -149,12 +144,11 @@ function drawFrame(time) {
     const cy = CONFIG.height / 2;
 
     renderer.ctx.save();
-    renderer.ctx.imageSmoothingEnabled = false;
 
     // Transform: move to center + offset, rotate, scale, then draw centered
     renderer.ctx.translate(
-        cx + Math.floor(offsetX) + shakeOffset.x,
-        cy + Math.floor(offsetY) + shakeOffset.y
+        cx + offsetX + shakeOffset.x,
+        cy + offsetY + shakeOffset.y
     );
     renderer.ctx.rotate(rotation);
     renderer.ctx.scale(scale, scale);
@@ -174,9 +168,6 @@ function animate(timestamp) {
         return;
     }
 
-    if (frameCount % 30 === 0) {
-        console.log('Animating frame', timeline.currentFrame, 'phase:', timeline.getCurrentPhase());
-    }
     frameCount++;
 
     // Frame timing

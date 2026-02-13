@@ -166,69 +166,77 @@ export class Timeline {
 export function createFrictionHallTimeline() {
     const timeline = new Timeline(30, 5.5);
 
-    // ===== ENTRY: Swoop in from background (0-1.8s) =====
+    // ===== ENTRY: Fast swoop in from background (0-1.0s) =====
 
-    // Scale: starts tiny (far away), grows to full with slight overshoot
+    // Scale: starts tiny (far away), grows to full size quickly
     timeline.addKeyframeAt('scale', 0, 0.05);
-    timeline.addKeyframeAt('scale', 0.8, 0.5, Easing.easeOutCubic);
-    timeline.addKeyframeAt('scale', 1.5, 1.03, Easing.easeOutCubic);
-    timeline.addKeyframeAt('scale', 1.8, 1.0, Easing.easeOutCubic);
+    timeline.addKeyframeAt('scale', 0.5, 0.6, Easing.easeOutCubic);
+    timeline.addKeyframeAt('scale', 0.85, 1.0, Easing.easeOutCubic);
+    timeline.addKeyframeAt('scale', 1.0, 1.0, Easing.easeOutCubic);
 
-    // Horizontal: swervy path from upper-left
-    timeline.addKeyframeAt('offsetX', 0, -180);
-    timeline.addKeyframeAt('offsetX', 0.6, -60, Easing.easeOutCubic);
-    timeline.addKeyframeAt('offsetX', 1.2, 15, Easing.easeInOut);       // overshoot right
-    timeline.addKeyframeAt('offsetX', 1.8, 0, Easing.easeOutCubic);     // settle center
+    // Horizontal: swervy path from upper-left, fast
+    timeline.addKeyframeAt('offsetX', 0, -160);
+    timeline.addKeyframeAt('offsetX', 0.4, -40, Easing.easeOutCubic);
+    timeline.addKeyframeAt('offsetX', 0.7, 10, Easing.easeInOut);        // slight overshoot
+    timeline.addKeyframeAt('offsetX', 1.0, 0, Easing.easeOutCubic);      // settle center
 
-    // Vertical: arc from above
-    timeline.addKeyframeAt('offsetY', 0, -120);
-    timeline.addKeyframeAt('offsetY', 0.6, -30, Easing.easeOutCubic);
-    timeline.addKeyframeAt('offsetY', 1.2, 8, Easing.easeInOut);        // overshoot below
-    timeline.addKeyframeAt('offsetY', 1.8, 0, Easing.easeOutCubic);     // settle center
+    // Vertical: arc from above, fast
+    timeline.addKeyframeAt('offsetY', 0, -100);
+    timeline.addKeyframeAt('offsetY', 0.4, -20, Easing.easeOutCubic);
+    timeline.addKeyframeAt('offsetY', 0.7, 5, Easing.easeInOut);         // slight overshoot
+    timeline.addKeyframeAt('offsetY', 1.0, 0, Easing.easeOutCubic);      // settle center
 
-    // Rotation: flat during entry
-    timeline.addKeyframeAt('rotation', 0, -0.15);                       // slight tilt during flight
-    timeline.addKeyframeAt('rotation', 1.5, 0.02, Easing.easeOutCubic);
-    timeline.addKeyframeAt('rotation', 1.8, 0, Easing.easeOutCubic);
+    // Rotation: slight tilt during flight, straightens on arrival
+    timeline.addKeyframeAt('rotation', 0, -0.12);
+    timeline.addKeyframeAt('rotation', 0.85, 0.01, Easing.easeOutCubic);
+    timeline.addKeyframeAt('rotation', 1.0, 0, Easing.easeOutCubic);
 
-    // Visibility: always visible (position/scale handles screen presence)
+    // Visibility: always visible
     timeline.addKeyframeAt('visibility', 0, 1);
 
-    // ===== HOLD: Confident display (1.8-3.2s) =====
+    // ===== EMPHASIS: Inflate/pop on landing (1.0-1.5s) =====
 
-    timeline.addKeyframeAt('offsetX', 3.2, 0);
-    timeline.addKeyframeAt('offsetY', 3.2, 0);
-    timeline.addKeyframeAt('scale', 3.2, 1.0);
-    timeline.addKeyframeAt('rotation', 3.2, 0);
+    // Scale pops up then settles back
+    timeline.addKeyframeAt('scale', 1.1, 1.08, Easing.easeOut);          // inflate
+    timeline.addKeyframeAt('scale', 1.3, 0.98, Easing.easeInOut);        // slight undershoot
+    timeline.addKeyframeAt('scale', 1.5, 1.0, Easing.easeOutCubic);      // settle
 
-    // ===== EXIT: Shake then roll out right (3.2-5.5s) =====
+    // ===== HOLD: Confident display (1.5-3.8s) =====
 
-    // Shake builds up before the roll
-    timeline.addKeyframeAt('shake', 0, 0);
-    timeline.addKeyframeAt('shake', 1.4, 0);
-    timeline.addKeyframeAt('shake', 1.6, 1.5, Easing.easeOut);     // soft landing thump
-    timeline.addKeyframeAt('shake', 2.0, 0, Easing.easeOut);
-    timeline.addKeyframeAt('shake', 3.2, 0);
-    timeline.addKeyframeAt('shake', 3.4, 3, Easing.easeIn);        // wind-up shake
-    timeline.addKeyframeAt('shake', 3.6, 1);
-    timeline.addKeyframeAt('shake', 3.8, 0);
+    timeline.addKeyframeAt('offsetX', 3.8, 0);
+    timeline.addKeyframeAt('offsetY', 3.8, 0);
+    timeline.addKeyframeAt('scale', 3.8, 1.0);
+    timeline.addKeyframeAt('rotation', 3.8, 0);
 
-    // Roll out: rotation (2 full spins)
-    timeline.addKeyframeAt('rotation', 3.5, 0);
-    timeline.addKeyframeAt('rotation', 5.3, Math.PI * 4, Easing.easeInCubic);
+    // ===== EXIT: Rubber band wind-up then smooth roll out (3.8-5.5s) =====
 
-    // Fly off to the right
-    timeline.addKeyframeAt('offsetX', 3.5, 0);
-    timeline.addKeyframeAt('offsetX', 5.3, 500, Easing.easeInCubic);
+    // Rubber band: pull left slightly, then snap back and roll out
+    timeline.addKeyframeAt('offsetX', 4.05, -10, Easing.easeOut);         // pull left (rubber band)
+    timeline.addKeyframeAt('offsetX', 4.2, 0, Easing.easeInOut);          // snap back to center
+    timeline.addKeyframeAt('offsetX', 5.3, 500, Easing.easeInCubic);      // fly off right
 
     // Slight upward arc during exit
-    timeline.addKeyframeAt('offsetY', 3.5, 0);
-    timeline.addKeyframeAt('offsetY', 4.2, -15, Easing.easeInOut);
-    timeline.addKeyframeAt('offsetY', 5.3, -40, Easing.easeInCubic);
+    timeline.addKeyframeAt('offsetY', 4.2, 0);
+    timeline.addKeyframeAt('offsetY', 4.7, -12, Easing.easeInOut);
+    timeline.addKeyframeAt('offsetY', 5.3, -30, Easing.easeInCubic);
+
+    // Smooth roll: 1.5 rotations (not too many)
+    timeline.addKeyframeAt('rotation', 4.2, 0);
+    timeline.addKeyframeAt('rotation', 5.3, Math.PI * 3, Easing.easeInCubic);
 
     // Slight shrink as it rolls away
-    timeline.addKeyframeAt('scale', 3.5, 1.0);
-    timeline.addKeyframeAt('scale', 5.3, 0.7, Easing.easeInCubic);
+    timeline.addKeyframeAt('scale', 4.2, 1.0);
+    timeline.addKeyframeAt('scale', 5.3, 0.75, Easing.easeInCubic);
+
+    // Shake: soft landing thump + pre-exit rumble
+    timeline.addKeyframeAt('shake', 0, 0);
+    timeline.addKeyframeAt('shake', 0.85, 0);
+    timeline.addKeyframeAt('shake', 1.0, 1.2, Easing.easeOut);           // landing thump
+    timeline.addKeyframeAt('shake', 1.3, 0, Easing.easeOut);
+    timeline.addKeyframeAt('shake', 3.8, 0);
+    timeline.addKeyframeAt('shake', 3.95, 2, Easing.easeIn);             // pre-exit rumble
+    timeline.addKeyframeAt('shake', 4.1, 0.5, Easing.easeOut);
+    timeline.addKeyframeAt('shake', 4.2, 0);
 
     // Visibility fades at very end
     timeline.addKeyframeAt('visibility', 5.0, 1);
@@ -238,25 +246,25 @@ export function createFrictionHallTimeline() {
 
     // Subtle glitch: brief pulse on landing + pre-exit
     timeline.addKeyframeAt('glitchIntensity', 0, 0);
-    timeline.addKeyframeAt('glitchIntensity', 1.5, 0);
-    timeline.addKeyframeAt('glitchIntensity', 1.7, 0.15, Easing.easeOut);
-    timeline.addKeyframeAt('glitchIntensity', 2.0, 0, Easing.easeOut);
-    timeline.addKeyframeAt('glitchIntensity', 3.2, 0);
-    timeline.addKeyframeAt('glitchIntensity', 3.4, 0.1, Easing.easeOut);
-    timeline.addKeyframeAt('glitchIntensity', 3.6, 0, Easing.easeOut);
+    timeline.addKeyframeAt('glitchIntensity', 0.9, 0);
+    timeline.addKeyframeAt('glitchIntensity', 1.05, 0.12, Easing.easeOut);
+    timeline.addKeyframeAt('glitchIntensity', 1.3, 0, Easing.easeOut);
+    timeline.addKeyframeAt('glitchIntensity', 3.8, 0);
+    timeline.addKeyframeAt('glitchIntensity', 3.95, 0.08, Easing.easeOut);
+    timeline.addKeyframeAt('glitchIntensity', 4.1, 0, Easing.easeOut);
 
     // Subtle scanlines during hold
     timeline.addKeyframeAt('scanlines', 0, 0);
-    timeline.addKeyframeAt('scanlines', 2.0, 0);
-    timeline.addKeyframeAt('scanlines', 2.3, 0.06, Easing.easeOut);
-    timeline.addKeyframeAt('scanlines', 3.0, 0.06);
-    timeline.addKeyframeAt('scanlines', 3.2, 0, Easing.easeIn);
+    timeline.addKeyframeAt('scanlines', 1.8, 0);
+    timeline.addKeyframeAt('scanlines', 2.1, 0.06, Easing.easeOut);
+    timeline.addKeyframeAt('scanlines', 3.5, 0.06);
+    timeline.addKeyframeAt('scanlines', 3.8, 0, Easing.easeIn);
 
     // Gentle breathing pulse during hold
     timeline.addKeyframeAt('pulse', 0, 1);
-    timeline.addKeyframeAt('pulse', 2.0, 1);
-    timeline.addKeyframeAt('pulse', 2.7, 1.01);
-    timeline.addKeyframeAt('pulse', 3.2, 1);
+    timeline.addKeyframeAt('pulse', 1.8, 1);
+    timeline.addKeyframeAt('pulse', 2.8, 1.01);
+    timeline.addKeyframeAt('pulse', 3.8, 1);
 
     return timeline;
 }
