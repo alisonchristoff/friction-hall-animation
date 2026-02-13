@@ -37,9 +37,10 @@ export class Timeline {
 
         // Animation phases (in seconds)
         this.phases = {
-            entry: { start: 0, end: 1.8 },
-            hold: { start: 1.8, end: 3.2 },
-            exit: { start: 3.2, end: 5.5 }
+            entry: { start: 0, end: 1.0 },
+            emphasis: { start: 1.0, end: 1.5 },
+            hold: { start: 1.5, end: 3.8 },
+            exit: { start: 3.8, end: 5.5 }
         };
 
         // Keyframes for various properties

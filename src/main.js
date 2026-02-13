@@ -29,6 +29,12 @@ canvas.style.height = `${CONFIG.height * 6}px`;
 
 const renderer = new Renderer(canvas);
 
+// Offscreen canvas for content rendering (transforms applied when compositing)
+const offscreenCanvas = document.createElement('canvas');
+offscreenCanvas.width = CONFIG.width;
+offscreenCanvas.height = CONFIG.height;
+const offscreenRenderer = new Renderer(offscreenCanvas);
+
 // Create elements
 const speechBubble = new SpeechBubble();
 const frictionHallText = new FrictionHallText();
@@ -84,20 +90,20 @@ speechBubble.generateShape(
 );
 console.log('Speech bubble generated');
 
-// Draw the main content (called with visibility factor)
+// Draw the main content to the offscreen renderer at full size
 function drawContent(time, visibility = 1) {
     if (visibility <= 0) return;
 
     // Draw speech bubble
-    speechBubble.draw(renderer, layout.bubble.centerX, layout.bubble.centerY, layout.bubble.width, layout.bubble.height);
+    speechBubble.draw(offscreenRenderer, layout.bubble.centerX, layout.bubble.centerY, layout.bubble.width, layout.bubble.height);
 
     // Draw main text (FRICTION stacked on HALL)
-    frictionHallText.draw(renderer, layout.text.centerX, layout.text.centerY, time);
+    frictionHallText.draw(offscreenRenderer, layout.text.centerX, layout.text.centerY, time);
 }
 
 // Draw a single frame
 function drawFrame(time) {
-    // Clear canvas
+    // Clear main canvas
     renderer.clear();
 
     // Draw background if not transparent mode
@@ -115,17 +121,37 @@ function drawFrame(time) {
     const scale = timeline.getValue('scale', 1);
     const rotation = timeline.getValue('rotation', 0);
 
+    // Debug: log transform values every 30 frames
+    if (timeline.currentFrame % 30 === 0) {
+        console.log(`Frame ${timeline.currentFrame}: scale=${scale.toFixed(3)}, rotation=${rotation.toFixed(3)}, offsetX=${offsetX.toFixed(1)}, offsetY=${offsetY.toFixed(1)}, visibility=${visibility}`);
+    }
+
+    if (visibility <= 0) return;
+
     // Update shake
     shakeEffect.setIntensity(shakeIntensity);
     const shakeOffset = shakeEffect.update();
 
-    // Canvas center point for transforms
+    // --- Step 1: Render content at full size to offscreen canvas ---
+    offscreenRenderer.clear();
+    drawContent(time, visibility);
+
+    // Apply pixel effects to the offscreen canvas (at full resolution)
+    if (glitchIntensity > 0.03) {
+        glitchEffect.apply(offscreenRenderer, glitchIntensity);
+    }
+    if (scanlineOpacity > 0) {
+        scanlinesEffect.apply(offscreenRenderer, scanlineOpacity, time);
+    }
+
+    // --- Step 2: Composite offscreen canvas onto main canvas with transforms ---
     const cx = CONFIG.width / 2;
     const cy = CONFIG.height / 2;
 
     renderer.ctx.save();
+    renderer.ctx.imageSmoothingEnabled = false;
 
-    // Transform chain: translate to center + offset, rotate, scale, translate back
+    // Transform: move to center + offset, rotate, scale, then draw centered
     renderer.ctx.translate(
         cx + Math.floor(offsetX) + shakeOffset.x,
         cy + Math.floor(offsetY) + shakeOffset.y
@@ -134,20 +160,8 @@ function drawFrame(time) {
     renderer.ctx.scale(scale, scale);
     renderer.ctx.translate(-cx, -cy);
 
-    // Draw content with full transform applied
-    if (visibility > 0) {
-        drawContent(time, visibility);
-
-        // Subtle glitch effect
-        if (glitchIntensity > 0.03) {
-            glitchEffect.apply(renderer, glitchIntensity);
-        }
-    }
-
-    // Subtle scanlines
-    if (scanlineOpacity > 0 && visibility > 0) {
-        scanlinesEffect.apply(renderer, scanlineOpacity, time);
-    }
+    // Draw the pre-rendered content as a single image (transforms apply correctly)
+    renderer.ctx.drawImage(offscreenCanvas, 0, 0);
 
     renderer.ctx.restore();
 }
@@ -249,12 +263,14 @@ document.getElementById('transparentBg').addEventListener('change', (e) => {
 // Initial draw - show the logo immediately for preview
 console.log('Drawing initial frame...');
 try {
-    // Draw a preview frame showing the content
     renderer.clear();
+    offscreenRenderer.clear();
     if (!isTransparentBackground) {
         background.draw(renderer);
     }
-    drawContent(0, 1);  // Force visibility
+    drawContent(0, 1);
+    // Composite offscreen to main at full size for preview
+    renderer.ctx.drawImage(offscreenCanvas, 0, 0);
     console.log('Initial frame drawn successfully');
 } catch (e) {
     console.error('Error drawing frame:', e);
